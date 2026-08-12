@@ -40,6 +40,19 @@ The favorite-player hero banner on My page (`.my-fav-player-banner`) is hardcode
 treatment (`background: #1a1a1a`) regardless of theme, matching the original design intent noted
 in the pre-implementation `README.md`.
 
+**Why default text actually recolors on theme toggle.** `data-theme` is set on `#app`
+(`toggleTheme()`), not on `<html>`/`<body>`. `#app` in `base.css` explicitly declares
+`color: var(--text)` — that's what makes the toggle work for text that never sets its own color
+(`.text-title`, `.text-heading`, `.text-body`, product names, etc.): the browser resolves `--text`
+at `#app`'s own position in the tree (where the theme override lives) and that computed color then
+inherits down. Without that explicit declaration on `#app`, such text would inherit `<body>`'s
+color instead — computed once from `:root`'s dark-mode default, since `<body>` sits outside the
+`data-theme` scope — and would stay the dark-mode color even after switching to light. Any new
+top-level container that hosts theme-dependent default text needs the same explicit
+`color: var(--text)`; text using `--text-secondary` / `--text-tertiary` / `--color-primary`
+directly is unaffected either way, since those classes already re-reference the variable at their
+own position.
+
 ## Typography
 
 - Family: `'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif`
