@@ -535,14 +535,20 @@ function selectPlayer(id) {
   );
 }
 
-function handleSelectPlayer() {
+async function handleSelectPlayer() {
   if (!APP.selectedPlayer) {
     showToast("선수를 선택해주세요.");
     return;
   }
 
   if (APP.selectedPlayer === "none") {
-    console.log("[Favorite Player → Favorite_Player__c] none selected");
+    const result = await callSalesforceApi("favorite-player", {
+      fanId: APP.currentFanId,
+      playerId: null,
+    });
+    if (!result.success) {
+      console.warn("[FavoritePlayer] Salesforce sync skipped:", result.error);
+    }
     trackEngagement("Favorite Player Selected", "Fan App", null);
     navigateTo("ticket");
     showToast("나중에 언제든 선택할 수 있어요!");
@@ -550,7 +556,13 @@ function handleSelectPlayer() {
   }
 
   const player = DATA.players.find((p) => p.id === APP.selectedPlayer);
-  console.log("[Favorite Player → Favorite_Player__c]", player);
+  const result = await callSalesforceApi("favorite-player", {
+    fanId: APP.currentFanId,
+    playerId: APP.selectedPlayer,
+  });
+  if (!result.success) {
+    console.warn("[FavoritePlayer] Salesforce sync skipped:", result.error);
+  }
   trackEngagement("Favorite Player Selected", "Fan App", APP.selectedPlayer);
   navigateTo("ticket");
   showToast(`${player.name} 선수를 응원합니다! ⚾`);
