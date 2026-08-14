@@ -134,3 +134,26 @@ function generateQRPlaceholder() {
   }
   return `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">${cells}</svg>`;
 }
+
+/** Call our serverless API endpoint (which securely proxies to Salesforce).
+ *  Returns { success: true, ... } on success, or { success: false, error } on failure.
+ *  Never throws — callers can safely continue the local UI flow even if the
+ *  Salesforce sync fails (e.g. network hiccup), so the fan's experience isn't blocked. */
+async function callSalesforceApi(endpoint, payload) {
+  try {
+    const res = await fetch(`/api/${endpoint}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      console.error(`[Salesforce API] ${endpoint} failed:`, data.error || res.statusText);
+      return { success: false, error: data.error || res.statusText };
+    }
+    return data;
+  } catch (err) {
+    console.error(`[Salesforce API] ${endpoint} network error:`, err);
+    return { success: false, error: err.message };
+  }
+}

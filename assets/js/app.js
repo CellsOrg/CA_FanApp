@@ -10,20 +10,32 @@ const APP = {
   selectedGame: null,
   selectedProduct: null,
   selectedQuantity: 1,
-  purchaseType: null,       // 'Ticket Purchase' | 'Goods Purchase' | 'Membership Enrollment' | 'Season Pass'
-  purchaseMode: 'direct',   // 'direct' (single item) | 'cart' (checkout from cart)
-  ticketTab: 0,             // 0=티켓, 1=멤버십, 2=시즌권
-  goodsChannel: 0,          // 0=온라인, 1=구장
-  goodsCategory: '전체',
-  signupData: { name: '', phone: '', channel: [], consent: { terms: false, privacy: false, email: false, sms: false, push: false, kakao: false } },
+  purchaseType: null, // 'Ticket Purchase' | 'Goods Purchase' | 'Membership Enrollment' | 'Season Pass'
+  purchaseMode: "direct", // 'direct' (single item) | 'cart' (checkout from cart)
+  ticketTab: 0, // 0=티켓, 1=멤버십, 2=시즌권
+  goodsChannel: 0, // 0=온라인, 1=구장
+  goodsCategory: "전체",
+  signupData: {
+    name: "",
+    phone: "",
+    channel: [],
+    consent: {
+      terms: false,
+      privacy: false,
+      email: false,
+      sms: false,
+      push: false,
+      kakao: false,
+    },
+  },
   selectedPlayer: null,
-  cart: [],                 // { cartId, purchaseType, product, game, quantity, size, markingPlayer }
-  addToCartOrigin: null,    // 'ticket' | 'goods' — which page the last "장바구니에 담기" happened from
-  selectedPaymentMethod: 'card',  // 'card' | 'simple' | 'transfer'
-  appliedCoupon: null,      // Benefit__c id
-  selectedSize: null,       // for direct-purchase jersey/jacket
-  selectedMarkingPlayer: null,  // Contact id or null — for direct-purchase jersey/jacket
-  pendingCartAction: null,  // 'buyNow' | 'addToCart' — deferred while the size/marking modal is open
+  cart: [], // { cartId, purchaseType, product, game, quantity, size, markingPlayer }
+  addToCartOrigin: null, // 'ticket' | 'goods' — which page the last "장바구니에 담기" happened from
+  selectedPaymentMethod: "card", // 'card' | 'simple' | 'transfer'
+  appliedCoupon: null, // Benefit__c id
+  selectedSize: null, // for direct-purchase jersey/jacket
+  selectedMarkingPlayer: null, // Contact id or null — for direct-purchase jersey/jacket
+  pendingCartAction: null, // 'buyNow' | 'addToCart' — deferred while the size/marking modal is open
 };
 
 /* ══════════════════════════════════════════════════════════════
@@ -157,10 +169,10 @@ function renderSignup() {
 }
 
 function renderFavoritePlayer() {
-  const positions = ['전체', '투수', '포수', '내야수', '외야수'];
+  const positions = ["전체", "투수", "포수", "내야수", "외야수"];
   return `
   <div class="screen no-nav" id="favorite-player" style="overflow:auto;padding-top:16px;">
-    ${renderPageHeader('제일 응원하는 선수는?', 'signup')}
+    ${renderPageHeader("제일 응원하는 선수는?", "signup")}
     <div class="text-caption" style="padding:0 24px;margin-bottom:16px;">응원하는 선수를 선택하면 맞춤 소식을 받을 수 있어요.</div>
 
     <div class="player-search">
@@ -169,7 +181,7 @@ function renderFavoritePlayer() {
 
     <div class="player-filters">
       <div class="chip-group" id="player-position-chips">
-        ${positions.map((p, i) => `<button class="chip ${i === 0 ? 'active' : ''}" data-value="${p}">${p}</button>`).join('')}
+        ${positions.map((p, i) => `<button class="chip ${i === 0 ? "active" : ""}" data-value="${p}">${p}</button>`).join("")}
       </div>
     </div>
 
@@ -190,7 +202,7 @@ function renderTicketPage() {
     </div>
 
     <div style="padding:0 var(--space-2xl);margin-bottom:var(--space-lg);">
-      ${renderSegmentedTab(['티켓', '멤버십', '시즌권'], 0, handleTicketTabSwitch)}
+      ${renderSegmentedTab(["티켓", "멤버십", "시즌권"], 0, handleTicketTabSwitch)}
     </div>
 
     <div id="ticket-tab-content"></div>
@@ -210,7 +222,7 @@ function renderGoodsPage() {
     </div>
 
     <div style="padding:0 var(--space-2xl);margin-bottom:var(--space-md);">
-      ${renderSegmentedTab(['온라인 스토어', '구장 굿즈샵'], 0, handleGoodsChannelSwitch)}
+      ${renderSegmentedTab(["온라인 스토어", "구장 굿즈샵"], 0, handleGoodsChannelSwitch)}
     </div>
 
     <div class="text-tab-row" id="goods-category-tabs"></div>
@@ -288,7 +300,7 @@ function renderMyPage() {
         🔔 알림 <span class="text-primary" style="font-weight:700;">${DATA.notifications.length}</span>
       </button>
       <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="navigateTo('benefits')">
-        🎁 혜택 <span class="text-primary" style="font-weight:700;">${DATA.benefits.filter(b=>b.status==='Issued').length}</span>
+        🎁 혜택 <span class="text-primary" style="font-weight:700;">${DATA.benefits.filter((b) => b.status === "Issued").length}</span>
       </button>
     </div>
 
@@ -308,7 +320,7 @@ function renderMyPage() {
 function renderMyPageContent() {
   const stats = DATA.fanStats;
 
-  const statGrid = document.getElementById('my-stat-grid');
+  const statGrid = document.getElementById("my-stat-grid");
   if (statGrid) {
     statGrid.innerHTML = `
       <div class="stat-card">
@@ -332,22 +344,25 @@ function renderMyPageContent() {
     `;
   }
 
-  const purchasesList = document.getElementById('my-purchases-list');
+  const purchasesList = document.getElementById("my-purchases-list");
   if (purchasesList) {
-    purchasesList.innerHTML = DATA.orders.length > 0
-      ? DATA.orders.map(o => renderPurchaseRow(o)).join('')
-      : '<div class="empty-state"><p>아직 구매 내역이 없습니다.</p></div>';
+    purchasesList.innerHTML =
+      DATA.orders.length > 0
+        ? DATA.orders.map((o) => renderPurchaseRow(o)).join("")
+        : '<div class="empty-state"><p>아직 구매 내역이 없습니다.</p></div>';
   }
 }
 
 function renderNotificationsPage() {
   return `
   <div class="screen" id="notifications" style="overflow:auto;padding-top:16px;">
-    ${renderPageHeader('알림', 'my-page')}
+    ${renderPageHeader("알림", "my-page")}
     <div class="notification-list">
-      ${DATA.notifications.length > 0
-        ? DATA.notifications.map(n => renderNotificationRow(n)).join('')
-        : '<div class="empty-state"><p>아직 알림이 없습니다.</p></div>'}
+      ${
+        DATA.notifications.length > 0
+          ? DATA.notifications.map((n) => renderNotificationRow(n)).join("")
+          : '<div class="empty-state"><p>아직 알림이 없습니다.</p></div>'
+      }
     </div>
   </div>`;
 }
@@ -355,11 +370,13 @@ function renderNotificationsPage() {
 function renderBenefitsPage() {
   return `
   <div class="screen" id="benefits" style="overflow:auto;padding-top:16px;">
-    ${renderPageHeader('내 혜택', 'my-page')}
+    ${renderPageHeader("내 혜택", "my-page")}
     <div class="benefits-list">
-      ${DATA.benefits.length > 0
-        ? DATA.benefits.map(b => renderBenefitCard(b)).join('')
-        : '<div class="empty-state"><p>아직 받은 혜택이 없습니다.</p></div>'}
+      ${
+        DATA.benefits.length > 0
+          ? DATA.benefits.map((b) => renderBenefitCard(b)).join("")
+          : '<div class="empty-state"><p>아직 받은 혜택이 없습니다.</p></div>'
+      }
     </div>
   </div>`;
 }
@@ -380,7 +397,7 @@ function renderPurchaseConfirm() {
 function renderCartPage() {
   return `
   <div class="screen" id="cart" style="overflow:auto;padding-top:16px;">
-    ${renderPageHeader('장바구니', 'ticket')}
+    ${renderPageHeader("장바구니", "ticket")}
     <div id="cart-content"></div>
   </div>`;
 }
@@ -390,70 +407,99 @@ function renderCartPage() {
    ══════════════════════════════════════════════════════════════ */
 
 function handleLogin() {
-  trackEngagement('Login', 'Fan App');
-  navigateTo('ticket');
-  showToast('환영합니다, 이루키님! 🎉');
+  trackEngagement("Login", "Fan App");
+  navigateTo("ticket");
+  showToast("환영합니다, 이루키님! 🎉");
 }
 
-function handleSignup() {
-  const name = document.getElementById('signup-name')?.value;
-  const phone = document.getElementById('signup-phone')?.value;
-  if (!name || !phone) { showToast('이름과 휴대폰 번호를 입력해주세요.'); return; }
+async function handleSignup() {
+  const name = document.getElementById("signup-name")?.value;
+  const phone = document.getElementById("signup-phone")?.value;
+  if (!name || !phone) {
+    showToast("이름과 휴대폰 번호를 입력해주세요.");
+    return;
+  }
 
-  const requiredRows = document.querySelectorAll('.checkbox-row[data-consent][data-required="true"]');
-  const allRequiredChecked = [...requiredRows].every(row => row.classList.contains('checked'));
-  if (!allRequiredChecked) { showToast('필수 항목에 동의해주세요.'); return; }
+  const requiredRows = document.querySelectorAll(
+    '.checkbox-row[data-consent][data-required="true"]',
+  );
+  const allRequiredChecked = [...requiredRows].every((row) =>
+    row.classList.contains("checked"),
+  );
+  if (!allRequiredChecked) {
+    showToast("필수 항목에 동의해주세요.");
+    return;
+  }
 
   // Collect consent data → Salesforce Person Account fields
-  const consentRows = document.querySelectorAll('.checkbox-row[data-consent]');
-  consentRows.forEach(row => {
+  const consentRows = document.querySelectorAll(".checkbox-row[data-consent]");
+  consentRows.forEach((row) => {
     const key = row.dataset.consent;
-    APP.signupData.consent[key] = row.classList.contains('checked');
+    APP.signupData.consent[key] = row.classList.contains("checked");
   });
 
   APP.signupData.name = name;
   APP.signupData.phone = phone;
 
-  const activeChips = document.querySelectorAll('#signup-channel-chips .chip.active');
-  APP.signupData.channel = [...activeChips].map(chip => chip.dataset.value);
+  const activeChips = document.querySelectorAll(
+    "#signup-channel-chips .chip.active",
+  );
+  APP.signupData.channel = [...activeChips].map((chip) => chip.dataset.value);
 
-  console.log('[Signup → Person Account]', APP.signupData);
-  trackEngagement('Signup', 'Fan App');
-  navigateTo('favorite-player');
+  const result = await callSalesforceApi("signup", {
+    name: APP.signupData.name,
+    phone: APP.signupData.phone,
+    channel: APP.signupData.channel,
+    consent: APP.signupData.consent,
+  });
+  if (result.success) {
+    APP.currentFanId = result.accountId;
+  } else {
+    console.warn("[Signup] Salesforce sync skipped:", result.error);
+  }
+  trackEngagement("Signup", "Fan App");
+  navigateTo("favorite-player");
 }
 
 function toggleConsent(el) {
-  el.classList.toggle('checked');
+  el.classList.toggle("checked");
   // Update "all" checkbox
-  const allChecked = [...document.querySelectorAll('.checkbox-row[data-consent]')].every(r => r.classList.contains('checked'));
-  const allCheckbox = document.querySelector('.consent-all');
-  if (allCheckbox) allCheckbox.classList.toggle('checked', allChecked);
+  const allChecked = [
+    ...document.querySelectorAll(".checkbox-row[data-consent]"),
+  ].every((r) => r.classList.contains("checked"));
+  const allCheckbox = document.querySelector(".consent-all");
+  if (allCheckbox) allCheckbox.classList.toggle("checked", allChecked);
 }
 
 function toggleAllConsent(el) {
-  el.classList.toggle('checked');
-  const isChecked = el.classList.contains('checked');
-  document.querySelectorAll('.checkbox-row[data-consent]').forEach(r => {
-    r.classList.toggle('checked', isChecked);
+  el.classList.toggle("checked");
+  const isChecked = el.classList.contains("checked");
+  document.querySelectorAll(".checkbox-row[data-consent]").forEach((r) => {
+    r.classList.toggle("checked", isChecked);
   });
 }
 
 function filterPlayers() {
-  const search = document.getElementById('player-search-input')?.value.toLowerCase() || '';
-  const activePos = document.querySelector('#player-position-chips .chip.active')?.dataset.value || '전체';
+  const search =
+    document.getElementById("player-search-input")?.value.toLowerCase() || "";
+  const activePos =
+    document.querySelector("#player-position-chips .chip.active")?.dataset
+      .value || "전체";
   renderPlayerGrid(search, activePos);
 }
 
-function renderPlayerGrid(search = '', position = '전체') {
+function renderPlayerGrid(search = "", position = "전체") {
   let filtered = DATA.players;
-  if (position !== '전체') filtered = filtered.filter(p => p.position === position);
-  if (search) filtered = filtered.filter(p => p.name.toLowerCase().includes(search));
+  if (position !== "전체")
+    filtered = filtered.filter((p) => p.position === position);
+  if (search)
+    filtered = filtered.filter((p) => p.name.toLowerCase().includes(search));
 
-  const grid = document.getElementById('player-grid');
+  const grid = document.getElementById("player-grid");
   if (!grid) return;
 
   const noneCard = `
-    <div class="player-card player-card-none ${APP.selectedPlayer === 'none' ? 'is-selected' : ''}" data-id="none" onclick="selectPlayer('none')">
+    <div class="player-card player-card-none ${APP.selectedPlayer === "none" ? "is-selected" : ""}" data-id="none" onclick="selectPlayer('none')">
       <div class="check-badge">✓</div>
       <div class="player-none-icon">?</div>
       <div class="player-info">
@@ -461,8 +507,12 @@ function renderPlayerGrid(search = '', position = '전체') {
       </div>
     </div>`;
 
-  grid.innerHTML = noneCard + filtered.map(p => `
-    <div class="player-card ${APP.selectedPlayer === p.id ? 'is-selected' : ''}" data-id="${p.id}" onclick="selectPlayer('${p.id}')">
+  grid.innerHTML =
+    noneCard +
+    filtered
+      .map(
+        (p) => `
+    <div class="player-card ${APP.selectedPlayer === p.id ? "is-selected" : ""}" data-id="${p.id}" onclick="selectPlayer('${p.id}')">
       <div class="check-badge">✓</div>
       <img class="player-photo" src="${p.photo}" alt="${p.name}" onerror="this.style.background='var(--bg-elevated)'">
       <div class="player-info">
@@ -471,32 +521,38 @@ function renderPlayerGrid(search = '', position = '전체') {
         <div class="player-position">${p.position}</div>
       </div>
     </div>
-  `).join('');
+  `,
+      )
+      .join("");
 }
 
 function selectPlayer(id) {
   APP.selectedPlayer = APP.selectedPlayer === id ? null : id;
   renderPlayerGrid(
-    document.getElementById('player-search-input')?.value.toLowerCase() || '',
-    document.querySelector('#player-position-chips .chip.active')?.dataset.value || '전체'
+    document.getElementById("player-search-input")?.value.toLowerCase() || "",
+    document.querySelector("#player-position-chips .chip.active")?.dataset
+      .value || "전체",
   );
 }
 
 function handleSelectPlayer() {
-  if (!APP.selectedPlayer) { showToast('선수를 선택해주세요.'); return; }
-
-  if (APP.selectedPlayer === 'none') {
-    console.log('[Favorite Player → Favorite_Player__c] none selected');
-    trackEngagement('Favorite Player Selected', 'Fan App', null);
-    navigateTo('ticket');
-    showToast('나중에 언제든 선택할 수 있어요!');
+  if (!APP.selectedPlayer) {
+    showToast("선수를 선택해주세요.");
     return;
   }
 
-  const player = DATA.players.find(p => p.id === APP.selectedPlayer);
-  console.log('[Favorite Player → Favorite_Player__c]', player);
-  trackEngagement('Favorite Player Selected', 'Fan App', APP.selectedPlayer);
-  navigateTo('ticket');
+  if (APP.selectedPlayer === "none") {
+    console.log("[Favorite Player → Favorite_Player__c] none selected");
+    trackEngagement("Favorite Player Selected", "Fan App", null);
+    navigateTo("ticket");
+    showToast("나중에 언제든 선택할 수 있어요!");
+    return;
+  }
+
+  const player = DATA.players.find((p) => p.id === APP.selectedPlayer);
+  console.log("[Favorite Player → Favorite_Player__c]", player);
+  trackEngagement("Favorite Player Selected", "Fan App", APP.selectedPlayer);
+  navigateTo("ticket");
   showToast(`${player.name} 선수를 응원합니다! ⚾`);
 }
 
@@ -505,21 +561,28 @@ function handleTicketTabSwitch(index, value) {
   APP.ticketTab = index;
   APP.selectedProduct = null;
   APP.selectedGame = null;
-  document.getElementById('ticket-footer-cta')?.classList.add('hidden');
+  document.getElementById("ticket-footer-cta")?.classList.add("hidden");
   renderTicketTabContent();
 }
 
 function renderTicketTabContent() {
-  const container = document.getElementById('ticket-tab-content');
+  const container = document.getElementById("ticket-tab-content");
   if (!container) return;
 
   if (APP.ticketTab === 0) {
     // Ticket — Game Select (NEW #10) + Seat Select
     container.innerHTML = `
       <div class="section-title" style="font-size:var(--font-size-base);">경기 선택</div>
-      ${renderGameList(DATA.games, (gameId) => { APP.selectedGame = gameId; checkTicketReady(); })}
+      ${renderGameList(DATA.games, (gameId) => {
+        APP.selectedGame = gameId;
+        checkTicketReady();
+      })}
       <div class="section-title" style="font-size:var(--font-size-base);margin-top:var(--space-lg);">좌석 선택</div>
-      ${renderProductGrid(DATA.tickets, 'product-thumb--wide', (id) => { APP.selectedProduct = id; APP.purchaseType = 'Ticket Purchase'; checkTicketReady(); })}
+      ${renderProductGrid(DATA.tickets, "product-thumb--wide", (id) => {
+        APP.selectedProduct = id;
+        APP.purchaseType = "Ticket Purchase";
+        checkTicketReady();
+      })}
     `;
   } else if (APP.ticketTab === 1) {
     container.innerHTML = `
@@ -527,7 +590,11 @@ function renderTicketTabContent() {
         <div class="match-hero-overlay"></div>
         <div class="match-hero-content"><div class="match-teams">MEMBERSHIP</div><div class="match-info">Cloud Alpacas 멤버십</div></div>
       </div>
-      ${renderProductGrid(DATA.memberships, 'product-thumb--wide', (id) => { APP.selectedProduct = id; APP.purchaseType = 'Membership Enrollment'; showFooterCta('ticket-footer-cta'); })}
+      ${renderProductGrid(DATA.memberships, "product-thumb--wide", (id) => {
+        APP.selectedProduct = id;
+        APP.purchaseType = "Membership Enrollment";
+        showFooterCta("ticket-footer-cta");
+      })}
     `;
   } else {
     container.innerHTML = `
@@ -535,26 +602,37 @@ function renderTicketTabContent() {
         <div class="match-hero-overlay"></div>
         <div class="match-hero-content"><div class="match-teams">SEASON PASS</div><div class="match-info">2026 시즌권</div></div>
       </div>
-      ${renderProductGrid(DATA.seasonPasses, 'product-thumb--wide', (id) => { APP.selectedProduct = id; APP.purchaseType = 'Season Pass'; showFooterCta('ticket-footer-cta'); })}
+      ${renderProductGrid(DATA.seasonPasses, "product-thumb--wide", (id) => {
+        APP.selectedProduct = id;
+        APP.purchaseType = "Season Pass";
+        showFooterCta("ticket-footer-cta");
+      })}
     `;
   }
 }
 
 function checkTicketReady() {
   if (APP.ticketTab === 0 && APP.selectedGame && APP.selectedProduct) {
-    showFooterCta('ticket-footer-cta');
+    showFooterCta("ticket-footer-cta");
   }
 }
 
 function showFooterCta(id) {
-  document.getElementById(id)?.classList.remove('hidden');
+  document.getElementById(id)?.classList.remove("hidden");
 }
 
 function handleBuyNow() {
-  if (!APP.purchaseType || !APP.selectedProduct) { showToast('상품을 선택해주세요.'); return; }
-  const { product } = findSelectedProductAndGame(APP.purchaseType, APP.selectedProduct, APP.selectedGame);
+  if (!APP.purchaseType || !APP.selectedProduct) {
+    showToast("상품을 선택해주세요.");
+    return;
+  }
+  const { product } = findSelectedProductAndGame(
+    APP.purchaseType,
+    APP.selectedProduct,
+    APP.selectedGame,
+  );
   if (requiresSizeAndMarking(product)) {
-    APP.pendingCartAction = 'buyNow';
+    APP.pendingCartAction = "buyNow";
     openSizeMarkingModal(product);
     return;
   }
@@ -564,36 +642,43 @@ function handleBuyNow() {
 }
 
 function proceedBuyNow() {
-  APP.purchaseMode = 'direct';
+  APP.purchaseMode = "direct";
   APP.selectedQuantity = 1;
-  APP.selectedPaymentMethod = 'card';
+  APP.selectedPaymentMethod = "card";
   APP.appliedCoupon = null;
-  navigateTo('purchase-confirm');
+  navigateTo("purchase-confirm");
   renderPurchaseConfirmContent();
 }
 
 function findSelectedProductAndGame(purchaseType, productId, gameId) {
   let product, game;
-  if (purchaseType === 'Ticket Purchase') {
-    product = DATA.tickets.find(t => t.id === productId);
-    game = DATA.games.find(g => g.id === gameId);
-  } else if (purchaseType === 'Membership Enrollment') {
-    product = DATA.memberships.find(m => m.id === productId);
-  } else if (purchaseType === 'Season Pass') {
-    product = DATA.seasonPasses.find(s => s.id === productId);
-  } else if (purchaseType === 'Goods Purchase') {
-    product = DATA.goods.find(g => g.id === productId);
+  if (purchaseType === "Ticket Purchase") {
+    product = DATA.tickets.find((t) => t.id === productId);
+    game = DATA.games.find((g) => g.id === gameId);
+  } else if (purchaseType === "Membership Enrollment") {
+    product = DATA.memberships.find((m) => m.id === productId);
+  } else if (purchaseType === "Season Pass") {
+    product = DATA.seasonPasses.find((s) => s.id === productId);
+  } else if (purchaseType === "Goods Purchase") {
+    product = DATA.goods.find((g) => g.id === productId);
   }
   return { product, game };
 }
 
 /* ── Cart ── */
 function addCurrentSelectionToCart() {
-  const { product, game } = findSelectedProductAndGame(APP.purchaseType, APP.selectedProduct, APP.selectedGame);
-  if (!product) { showToast('상품을 선택해주세요.'); return; }
+  const { product, game } = findSelectedProductAndGame(
+    APP.purchaseType,
+    APP.selectedProduct,
+    APP.selectedGame,
+  );
+  if (!product) {
+    showToast("상품을 선택해주세요.");
+    return;
+  }
 
   if (requiresSizeAndMarking(product)) {
-    APP.pendingCartAction = 'addToCart';
+    APP.pendingCartAction = "addToCart";
     openSizeMarkingModal(product);
     return;
   }
@@ -602,7 +687,7 @@ function addCurrentSelectionToCart() {
 
 function proceedAddToCart(product, game, size, markingPlayer) {
   APP.cart.push({
-    cartId: 'cart-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
+    cartId: "cart-" + Date.now() + "-" + Math.random().toString(36).slice(2, 6),
     purchaseType: APP.purchaseType,
     product,
     game: game || null,
@@ -610,19 +695,19 @@ function proceedAddToCart(product, game, size, markingPlayer) {
     size: size || null,
     markingPlayer: markingPlayer || null,
   });
-  trackEngagement('Add to Cart', APP.purchaseType, null);
+  trackEngagement("Add to Cart", APP.purchaseType, null);
   updateCartBadges();
 
-  const goodsOrigin = APP.purchaseType === 'Goods Purchase';
-  APP.addToCartOrigin = goodsOrigin ? 'goods' : 'ticket';
+  const goodsOrigin = APP.purchaseType === "Goods Purchase";
+  APP.addToCartOrigin = goodsOrigin ? "goods" : "ticket";
   APP.selectedProduct = null;
   APP.selectedGame = null;
   APP.purchaseType = null;
   if (goodsOrigin) {
-    document.getElementById('goods-footer-cta')?.classList.add('hidden');
+    document.getElementById("goods-footer-cta")?.classList.add("hidden");
     renderGoodsGrid();
   } else {
-    document.getElementById('ticket-footer-cta')?.classList.add('hidden');
+    document.getElementById("ticket-footer-cta")?.classList.add("hidden");
     renderTicketTabContent();
   }
 
@@ -635,41 +720,53 @@ function requiresSizeAndMarking(product) {
 }
 
 function openSizeMarkingModal(product) {
-  const container = document.getElementById('size-marking-modal-content');
+  const container = document.getElementById("size-marking-modal-content");
   if (!container) return;
 
   container.innerHTML = `
     <div class="text-heading" style="margin-bottom:var(--space-lg);">${product.name} 옵션 선택</div>
     <label class="field-label">사이즈</label>
     <div class="chip-group" id="size-chip-group" style="margin-bottom:var(--space-lg);">
-      ${product.sizes.map(s => `<button class="chip" data-value="${s}">${s}</button>`).join('')}
+      ${product.sizes.map((s) => `<button class="chip" data-value="${s}">${s}</button>`).join("")}
     </div>
     <label class="field-label">마킹할 선수 (선택)</label>
     <div class="chip-group" id="marking-chip-group" style="margin-bottom:var(--space-xl);">
       <button class="chip active" data-value="none">마킹 없음</button>
-      ${DATA.players.map(p => `<button class="chip" data-value="${p.id}">${p.name}</button>`).join('')}
+      ${DATA.players.map((p) => `<button class="chip" data-value="${p.id}">${p.name}</button>`).join("")}
     </div>
     <button class="btn btn-primary" onclick="confirmSizeMarking()">선택 완료</button>
   `;
-  initChipGroup(document.getElementById('size-chip-group'));
-  initChipGroup(document.getElementById('marking-chip-group'));
+  initChipGroup(document.getElementById("size-chip-group"));
+  initChipGroup(document.getElementById("marking-chip-group"));
 
-  openModal('size-marking-modal');
+  openModal("size-marking-modal");
 }
 
 function confirmSizeMarking() {
-  const sizeChip = document.querySelector('#size-chip-group .chip.active');
-  if (!sizeChip) { showToast('사이즈를 선택해주세요.'); return; }
+  const sizeChip = document.querySelector("#size-chip-group .chip.active");
+  if (!sizeChip) {
+    showToast("사이즈를 선택해주세요.");
+    return;
+  }
   const size = sizeChip.dataset.value;
-  const markingChip = document.querySelector('#marking-chip-group .chip.active');
-  const markingPlayer = markingChip && markingChip.dataset.value !== 'none' ? markingChip.dataset.value : null;
+  const markingChip = document.querySelector(
+    "#marking-chip-group .chip.active",
+  );
+  const markingPlayer =
+    markingChip && markingChip.dataset.value !== "none"
+      ? markingChip.dataset.value
+      : null;
 
-  const { product, game } = findSelectedProductAndGame(APP.purchaseType, APP.selectedProduct, APP.selectedGame);
+  const { product, game } = findSelectedProductAndGame(
+    APP.purchaseType,
+    APP.selectedProduct,
+    APP.selectedGame,
+  );
   const pendingAction = APP.pendingCartAction;
   APP.pendingCartAction = null;
-  closeModal('size-marking-modal');
+  closeModal("size-marking-modal");
 
-  if (pendingAction === 'addToCart') {
+  if (pendingAction === "addToCart") {
     proceedAddToCart(product, game, size, markingPlayer);
   } else {
     APP.selectedSize = size;
@@ -680,61 +777,63 @@ function confirmSizeMarking() {
 
 function closeSizeMarkingModal() {
   APP.pendingCartAction = null;
-  closeModal('size-marking-modal');
+  closeModal("size-marking-modal");
 
   // back to the goods page's default (unselected) state
   APP.selectedProduct = null;
   APP.purchaseType = null;
-  document.getElementById('goods-footer-cta')?.classList.add('hidden');
+  document.getElementById("goods-footer-cta")?.classList.add("hidden");
   renderGoodsGrid();
 }
 
 function showAddToCartModal(product) {
-  const nameEl = document.getElementById('cart-modal-product-name');
+  const nameEl = document.getElementById("cart-modal-product-name");
   if (nameEl) nameEl.textContent = product.name;
-  openModal('add-to-cart-modal');
+  openModal("add-to-cart-modal");
 }
 
 function goToCart() {
-  navigateTo('cart');
+  navigateTo("cart");
   renderCartPageContent();
 }
 
 function goToCartFromModal() {
-  closeModal('add-to-cart-modal');
+  closeModal("add-to-cart-modal");
   goToCart();
 }
 
 function continueBrowsingFromModal() {
-  closeModal('add-to-cart-modal');
-  if (APP.addToCartOrigin === 'goods') {
-    navigateTo('goods');
+  closeModal("add-to-cart-modal");
+  if (APP.addToCartOrigin === "goods") {
+    navigateTo("goods");
   } else {
     resetTicketTabToDefault();
-    navigateTo('ticket');
+    navigateTo("ticket");
   }
 }
 
 function resetTicketTabToDefault() {
   APP.ticketTab = 0;
-  const seg = document.querySelector('#ticket .segmented');
+  const seg = document.querySelector("#ticket .segmented");
   if (seg) {
-    seg.querySelectorAll('.segmented-item').forEach((item, i) => item.classList.toggle('active', i === 0));
+    seg
+      .querySelectorAll(".segmented-item")
+      .forEach((item, i) => item.classList.toggle("active", i === 0));
   }
-  document.getElementById('ticket-footer-cta')?.classList.add('hidden');
+  document.getElementById("ticket-footer-cta")?.classList.add("hidden");
   renderTicketTabContent();
 }
 
 function updateCartBadges() {
   const count = APP.cart.reduce((sum, item) => sum + item.quantity, 0);
-  document.querySelectorAll('.cart-badge').forEach(b => {
+  document.querySelectorAll(".cart-badge").forEach((b) => {
     b.textContent = count;
-    b.classList.toggle('hidden', count === 0);
+    b.classList.toggle("hidden", count === 0);
   });
 }
 
 function changeCartItemQty(cartId, delta) {
-  const item = APP.cart.find(i => i.cartId === cartId);
+  const item = APP.cart.find((i) => i.cartId === cartId);
   if (!item) return;
   item.quantity = Math.max(1, Math.min(10, item.quantity + delta));
   updateCartBadges();
@@ -742,13 +841,13 @@ function changeCartItemQty(cartId, delta) {
 }
 
 function removeCartItem(cartId) {
-  APP.cart = APP.cart.filter(i => i.cartId !== cartId);
+  APP.cart = APP.cart.filter((i) => i.cartId !== cartId);
   updateCartBadges();
   renderCartPageContent();
 }
 
 function renderCartPageContent() {
-  const container = document.getElementById('cart-content');
+  const container = document.getElementById("cart-content");
   if (!container) return;
 
   if (APP.cart.length === 0) {
@@ -763,11 +862,14 @@ function renderCartPageContent() {
     return;
   }
 
-  const subtotal = APP.cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+  const subtotal = APP.cart.reduce(
+    (sum, item) => sum + item.product.price * item.quantity,
+    0,
+  );
 
   container.innerHTML = `
     <div class="cart-item-list">
-      ${APP.cart.map(item => renderCartItemRow(item, true)).join('')}
+      ${APP.cart.map((item) => renderCartItemRow(item, true)).join("")}
     </div>
     <div class="cart-summary">
       <div class="order-line total"><span>합계</span><span>${formatPrice(subtotal)}</span></div>
@@ -779,33 +881,36 @@ function renderCartPageContent() {
 }
 
 function handleCartCheckout() {
-  if (APP.cart.length === 0) { showToast('장바구니가 비어있습니다.'); return; }
-  APP.purchaseMode = 'cart';
-  APP.selectedPaymentMethod = 'card';
+  if (APP.cart.length === 0) {
+    showToast("장바구니가 비어있습니다.");
+    return;
+  }
+  APP.purchaseMode = "cart";
+  APP.selectedPaymentMethod = "card";
   APP.appliedCoupon = null;
-  navigateTo('purchase-confirm');
+  navigateTo("purchase-confirm");
   renderPurchaseConfirmContent();
 }
 
 /* ── Purchase Confirm (NEW #12) ── */
 function getCouponDiscount(subtotal) {
   if (!APP.appliedCoupon) return 0;
-  const coupon = DATA.benefits.find(b => b.id === APP.appliedCoupon);
+  const coupon = DATA.benefits.find((b) => b.id === APP.appliedCoupon);
   if (!coupon || !coupon.discountPercent) return 0;
-  return Math.round(subtotal * coupon.discountPercent / 100);
+  return Math.round((subtotal * coupon.discountPercent) / 100);
 }
 
 function renderPaymentAndCouponSection() {
   const methods = [
-    { id: 'card', label: '💳 카드 결제' },
-    { id: 'simple', label: '⚡ 간편결제' },
-    { id: 'transfer', label: '🏦 계좌이체' },
+    { id: "card", label: "💳 카드 결제" },
+    { id: "simple", label: "⚡ 간편결제" },
+    { id: "transfer", label: "🏦 계좌이체" },
   ];
   return `
     <div class="payment-section">
       <label class="field-label">결제 수단</label>
       <div class="payment-method-list">
-        ${methods.map(m => `<button class="payment-method-item ${APP.selectedPaymentMethod === m.id ? 'active' : ''}" onclick="selectPaymentMethod('${m.id}')">${m.label}</button>`).join('')}
+        ${methods.map((m) => `<button class="payment-method-item ${APP.selectedPaymentMethod === m.id ? "active" : ""}" onclick="selectPaymentMethod('${m.id}')">${m.label}</button>`).join("")}
       </div>
     </div>
     <div class="coupon-section">
@@ -817,7 +922,7 @@ function renderPaymentAndCouponSection() {
 
 function renderCouponControl() {
   if (APP.appliedCoupon) {
-    const coupon = DATA.benefits.find(b => b.id === APP.appliedCoupon);
+    const coupon = DATA.benefits.find((b) => b.id === APP.appliedCoupon);
     return `
       <div class="coupon-applied-row">
         <span>${coupon.title} 적용됨</span>
@@ -825,24 +930,30 @@ function renderCouponControl() {
       </div>`;
   }
 
-  const available = DATA.benefits.filter(b => b.status === 'Issued' && b.discountPercent);
+  const available = DATA.benefits.filter(
+    (b) => b.status === "Issued" && b.discountPercent,
+  );
   if (available.length === 0) {
     return `<div class="text-caption">사용 가능한 쿠폰이 없습니다.</div>`;
   }
   return `
     <button class="btn btn-secondary btn-sm" onclick="toggleCouponList()">쿠폰 적용하기</button>
     <div class="coupon-list hidden" id="coupon-list">
-      ${available.map(c => `
+      ${available
+        .map(
+          (c) => `
         <div class="coupon-list-item" onclick="applyCoupon('${c.id}')">
           <span>${c.title}</span>
           <span class="text-primary" style="font-weight:700;">적용</span>
-        </div>`).join('')}
+        </div>`,
+        )
+        .join("")}
     </div>
   `;
 }
 
 function toggleCouponList() {
-  document.getElementById('coupon-list')?.classList.toggle('hidden');
+  document.getElementById("coupon-list")?.classList.toggle("hidden");
 }
 
 function applyCoupon(couponId) {
@@ -861,10 +972,10 @@ function selectPaymentMethod(methodId) {
 }
 
 function renderPurchaseConfirmContent() {
-  const container = document.getElementById('purchase-confirm-content');
+  const container = document.getElementById("purchase-confirm-content");
   if (!container) return;
 
-  if (APP.purchaseMode === 'cart') {
+  if (APP.purchaseMode === "cart") {
     renderCartCheckoutContent(container);
   } else {
     renderDirectCheckoutContent(container);
@@ -872,8 +983,16 @@ function renderPurchaseConfirmContent() {
 }
 
 function renderDirectCheckoutContent(container) {
-  const { product, game } = findSelectedProductAndGame(APP.purchaseType, APP.selectedProduct, APP.selectedGame);
-  if (!product) { container.innerHTML = '<div class="empty-state"><p>상품을 선택해주세요.</p></div>'; return; }
+  const { product, game } = findSelectedProductAndGame(
+    APP.purchaseType,
+    APP.selectedProduct,
+    APP.selectedGame,
+  );
+  if (!product) {
+    container.innerHTML =
+      '<div class="empty-state"><p>상품을 선택해주세요.</p></div>';
+    return;
+  }
 
   const unitPrice = product.price;
   const subtotal = unitPrice * APP.selectedQuantity;
@@ -884,8 +1003,8 @@ function renderDirectCheckoutContent(container) {
     <div style="padding:var(--space-2xl);text-align:center;">
       <img src="${product.image}" style="width:120px;border-radius:var(--radius-md);margin-bottom:var(--space-lg);" onerror="this.style.background='var(--bg-elevated)'">
       <div class="text-heading">${product.name}</div>
-      ${game ? `<div class="text-caption" style="margin-top:var(--space-sm);">${game.home} vs ${game.away} · ${formatDateFull(game.date)} ${game.time}</div>` : ''}
-      ${APP.selectedSize ? `<div class="text-caption" style="margin-top:var(--space-sm);">${formatSizeMarking(APP.selectedSize, APP.selectedMarkingPlayer)}</div>` : ''}
+      ${game ? `<div class="text-caption" style="margin-top:var(--space-sm);">${game.home} vs ${game.away} · ${formatDateFull(game.date)} ${game.time}</div>` : ""}
+      ${APP.selectedSize ? `<div class="text-caption" style="margin-top:var(--space-sm);">${formatSizeMarking(APP.selectedSize, APP.selectedMarkingPlayer)}</div>` : ""}
     </div>
 
     <!-- Quantity Selector -->
@@ -903,7 +1022,7 @@ function renderDirectCheckoutContent(container) {
     <div class="order-summary">
       <div class="order-line"><span>${product.name}</span><span>${formatPrice(unitPrice)}</span></div>
       <div class="order-line"><span>수량</span><span id="qty-summary">${APP.selectedQuantity}매</span></div>
-      ${discount > 0 ? `<div class="order-line"><span>쿠폰 할인</span><span class="text-primary">-${formatPrice(discount)}</span></div>` : ''}
+      ${discount > 0 ? `<div class="order-line"><span>쿠폰 할인</span><span class="text-primary">-${formatPrice(discount)}</span></div>` : ""}
       <div class="order-line total"><span>총 결제금액</span><span id="total-price">${formatPrice(total)}</span></div>
     </div>
 
@@ -914,15 +1033,22 @@ function renderDirectCheckoutContent(container) {
 }
 
 function renderCartCheckoutContent(container) {
-  if (APP.cart.length === 0) { container.innerHTML = '<div class="empty-state"><p>장바구니가 비어있습니다.</p></div>'; return; }
+  if (APP.cart.length === 0) {
+    container.innerHTML =
+      '<div class="empty-state"><p>장바구니가 비어있습니다.</p></div>';
+    return;
+  }
 
-  const subtotal = APP.cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+  const subtotal = APP.cart.reduce(
+    (sum, item) => sum + item.product.price * item.quantity,
+    0,
+  );
   const discount = getCouponDiscount(subtotal);
   const total = subtotal - discount;
 
   container.innerHTML = `
     <div class="cart-item-list" style="padding-top:var(--space-lg);">
-      ${APP.cart.map(item => renderCartItemRow(item, false)).join('')}
+      ${APP.cart.map((item) => renderCartItemRow(item, false)).join("")}
     </div>
 
     <div style="padding:0 var(--space-2xl);">
@@ -931,7 +1057,7 @@ function renderCartCheckoutContent(container) {
 
     <div class="order-summary">
       <div class="order-line"><span>상품 금액</span><span>${formatPrice(subtotal)}</span></div>
-      ${discount > 0 ? `<div class="order-line"><span>쿠폰 할인</span><span class="text-primary">-${formatPrice(discount)}</span></div>` : ''}
+      ${discount > 0 ? `<div class="order-line"><span>쿠폰 할인</span><span class="text-primary">-${formatPrice(discount)}</span></div>` : ""}
       <div class="order-line total"><span>총 결제금액</span><span>${formatPrice(total)}</span></div>
     </div>
 
@@ -942,19 +1068,31 @@ function renderCartCheckoutContent(container) {
 }
 
 function changeQty(delta) {
-  APP.selectedQuantity = Math.max(1, Math.min(10, APP.selectedQuantity + delta));
+  APP.selectedQuantity = Math.max(
+    1,
+    Math.min(10, APP.selectedQuantity + delta),
+  );
   renderPurchaseConfirmContent();
 }
 
 function confirmPurchase() {
-  if (APP.purchaseMode === 'cart') {
+  if (APP.purchaseMode === "cart") {
     confirmCartPurchase();
   } else {
     confirmDirectPurchase();
   }
 }
 
-function logOrder(purchaseType, product, game, quantity, paymentMethod, chargedAmount, size, markingPlayer) {
+function logOrder(
+  purchaseType,
+  product,
+  game,
+  quantity,
+  paymentMethod,
+  chargedAmount,
+  size,
+  markingPlayer,
+) {
   // → Salesforce Order + OrderItem
   const orderData = {
     fan: DATA.currentFan.id,
@@ -963,27 +1101,30 @@ function logOrder(purchaseType, product, game, quantity, paymentMethod, chargedA
     game: game || null,
     quantity: quantity,
     totalAmount: chargedAmount,
-    paymentStatus: 'Paid',
+    paymentStatus: "Paid",
     paymentMethod: paymentMethod,
     size: size || null,
     markingPlayer: markingPlayer || null,
     orderDate: new Date().toISOString(),
   };
-  console.log('[Purchase → Order/OrderItem]', orderData);
+  console.log("[Purchase → Order/OrderItem]", orderData);
 
   DATA.orders.unshift({
-    id: 'order-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
+    id: "order-" + Date.now() + "-" + Math.random().toString(36).slice(2, 6),
     type: purchaseType,
     productName: product.name,
     price: chargedAmount,
-    date: new Date().toISOString().split('T')[0],
-    status: 'Paid',
-    channel: '앱',
+    date: new Date().toISOString().split("T")[0],
+    status: "Paid",
+    channel: "앱",
     image: product.image,
   });
-  DATA.fanStats.totalTickets += (purchaseType === 'Ticket Purchase' ? quantity : 0);
-  if (purchaseType === 'Membership Enrollment') DATA.fanStats.membership = product.tier || product.name;
-  if (purchaseType === 'Season Pass') DATA.fanStats.seasonPass = product.tier || product.name;
+  DATA.fanStats.totalTickets +=
+    purchaseType === "Ticket Purchase" ? quantity : 0;
+  if (purchaseType === "Membership Enrollment")
+    DATA.fanStats.membership = product.tier || product.name;
+  if (purchaseType === "Season Pass")
+    DATA.fanStats.seasonPass = product.tier || product.name;
 }
 
 function consumeAppliedCoupon() {
@@ -993,13 +1134,26 @@ function consumeAppliedCoupon() {
 }
 
 function confirmDirectPurchase() {
-  const { product, game } = findSelectedProductAndGame(APP.purchaseType, APP.selectedProduct, APP.selectedGame);
+  const { product, game } = findSelectedProductAndGame(
+    APP.purchaseType,
+    APP.selectedProduct,
+    APP.selectedGame,
+  );
   if (!product) return;
 
   const subtotal = product.price * APP.selectedQuantity;
   const discount = getCouponDiscount(subtotal);
-  logOrder(APP.purchaseType, product, game, APP.selectedQuantity, APP.selectedPaymentMethod, subtotal - discount, APP.selectedSize, APP.selectedMarkingPlayer);
-  trackEngagement('Purchase', `${APP.purchaseType}`, null);
+  logOrder(
+    APP.purchaseType,
+    product,
+    game,
+    APP.selectedQuantity,
+    APP.selectedPaymentMethod,
+    subtotal - discount,
+    APP.selectedSize,
+    APP.selectedMarkingPlayer,
+  );
+  trackEngagement("Purchase", `${APP.purchaseType}`, null);
   consumeAppliedCoupon();
 
   const purchaseType = APP.purchaseType;
@@ -1007,88 +1161,117 @@ function confirmDirectPurchase() {
   APP.selectedProduct = null;
   APP.selectedGame = null;
   APP.purchaseType = null;
-  APP.purchaseMode = 'direct';
+  APP.purchaseMode = "direct";
   APP.selectedSize = null;
   APP.selectedMarkingPlayer = null;
 
-  if (purchaseType === 'Goods Purchase') {
-    document.getElementById('goods-footer-cta')?.classList.add('hidden');
-    navigateTo('goods');
+  if (purchaseType === "Goods Purchase") {
+    document.getElementById("goods-footer-cta")?.classList.add("hidden");
+    navigateTo("goods");
     renderGoodsGrid();
   } else {
-    document.getElementById('ticket-footer-cta')?.classList.add('hidden');
-    navigateTo('ticket');
+    document.getElementById("ticket-footer-cta")?.classList.add("hidden");
+    navigateTo("ticket");
     renderTicketTabContent();
   }
-  showToast('결제가 완료되었습니다! ✅');
+  showToast("결제가 완료되었습니다! ✅");
 }
 
 function confirmCartPurchase() {
   if (APP.cart.length === 0) return;
 
-  const subtotal = APP.cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+  const subtotal = APP.cart.reduce(
+    (sum, item) => sum + item.product.price * item.quantity,
+    0,
+  );
   const discount = getCouponDiscount(subtotal);
 
-  APP.cart.forEach(item => {
+  APP.cart.forEach((item) => {
     const lineSubtotal = item.product.price * item.quantity;
-    const lineDiscount = subtotal > 0 ? Math.round(discount * lineSubtotal / subtotal) : 0;
-    logOrder(item.purchaseType, item.product, item.game, item.quantity, APP.selectedPaymentMethod, lineSubtotal - lineDiscount, item.size, item.markingPlayer);
+    const lineDiscount =
+      subtotal > 0 ? Math.round((discount * lineSubtotal) / subtotal) : 0;
+    logOrder(
+      item.purchaseType,
+      item.product,
+      item.game,
+      item.quantity,
+      APP.selectedPaymentMethod,
+      lineSubtotal - lineDiscount,
+      item.size,
+      item.markingPlayer,
+    );
   });
-  trackEngagement('Purchase', 'Cart Checkout', null);
+  trackEngagement("Purchase", "Cart Checkout", null);
   consumeAppliedCoupon();
 
   APP.cart = [];
-  APP.purchaseMode = 'direct';
+  APP.purchaseMode = "direct";
   updateCartBadges();
 
-  document.getElementById('ticket-footer-cta')?.classList.add('hidden');
-  document.getElementById('goods-footer-cta')?.classList.add('hidden');
-  navigateTo('ticket');
+  document.getElementById("ticket-footer-cta")?.classList.add("hidden");
+  document.getElementById("goods-footer-cta")?.classList.add("hidden");
+  navigateTo("ticket");
   renderTicketTabContent();
-  showToast('결제가 완료되었습니다! ✅');
+  showToast("결제가 완료되었습니다! ✅");
 }
 
 function handlePurchaseConfirmBack() {
-  if (APP.purchaseMode === 'cart') { goToCart(); return; }
-  if (APP.purchaseType === 'Goods Purchase') { navigateTo('goods'); return; }
-  navigateTo('ticket');
+  if (APP.purchaseMode === "cart") {
+    goToCart();
+    return;
+  }
+  if (APP.purchaseType === "Goods Purchase") {
+    navigateTo("goods");
+    return;
+  }
+  navigateTo("ticket");
 }
 
 /* ── Goods ── */
 function handleGoodsChannelSwitch(index) {
   APP.goodsChannel = index;
-  APP.goodsCategory = '전체';
+  APP.goodsCategory = "전체";
   renderGoodsCategoryTabs();
   renderGoodsGrid();
 }
 
 function renderGoodsCategoryTabs() {
-  const container = document.getElementById('goods-category-tabs');
+  const container = document.getElementById("goods-category-tabs");
   if (!container) return;
-  container.innerHTML = DATA.goodsCategories.map(c =>
-    `<button class="text-tab-item ${c === APP.goodsCategory ? 'active' : ''}" data-value="${c}" onclick="switchGoodsCategory('${c}')">${c}</button>`
-  ).join('');
+  container.innerHTML = DATA.goodsCategories
+    .map(
+      (c) =>
+        `<button class="text-tab-item ${c === APP.goodsCategory ? "active" : ""}" data-value="${c}" onclick="switchGoodsCategory('${c}')">${c}</button>`,
+    )
+    .join("");
 }
 
 function switchGoodsCategory(cat) {
   APP.goodsCategory = cat;
-  document.querySelectorAll('.text-tab-item').forEach(t => t.classList.toggle('active', t.dataset.value === cat));
+  document
+    .querySelectorAll(".text-tab-item")
+    .forEach((t) => t.classList.toggle("active", t.dataset.value === cat));
   renderGoodsGrid();
 }
 
 function renderGoodsGrid() {
-  const container = document.getElementById('goods-grid-content');
+  const container = document.getElementById("goods-grid-content");
   if (!container) return;
 
-  const channelFilter = APP.goodsChannel === 0 ? '온라인' : '구장';
-  let filtered = DATA.goods.filter(g => g.channel === channelFilter);
-  if (APP.goodsCategory !== '전체') filtered = filtered.filter(g => g.category === APP.goodsCategory);
+  const channelFilter = APP.goodsChannel === 0 ? "온라인" : "구장";
+  let filtered = DATA.goods.filter((g) => g.channel === channelFilter);
+  if (APP.goodsCategory !== "전체")
+    filtered = filtered.filter((g) => g.category === APP.goodsCategory);
 
-  container.innerHTML = renderProductGrid(filtered, 'product-thumb--tall', (id) => {
-    APP.selectedProduct = id;
-    APP.purchaseType = 'Goods Purchase';
-    showFooterCta('goods-footer-cta');
-  });
+  container.innerHTML = renderProductGrid(
+    filtered,
+    "product-thumb--tall",
+    (id) => {
+      APP.selectedProduct = id;
+      APP.purchaseType = "Goods Purchase";
+      showFooterCta("goods-footer-cta");
+    },
+  );
 }
 
 /* ── Check-in ── */
@@ -1098,43 +1281,45 @@ function handleCheckin() {
     fan: DATA.currentFan.id,
     game: DATA.games[0].id,
     admissionTime: new Date().toISOString(),
-    gate: 'Gate A',
-    section: '1루',
-    row: 'A',
-    seatNumber: '12',
+    gate: "Gate A",
+    section: "1루",
+    row: "A",
+    seatNumber: "12",
   };
-  console.log('[Check-in → Admission__c]', admissionData);
-  trackEngagement('Check-in', 'Fan App');
+  console.log("[Check-in → Admission__c]", admissionData);
+  trackEngagement("Check-in", "Fan App");
 
   DATA.fanStats.totalAttendance += 1;
-  showToast('입장이 확인되었습니다! ⚾');
+  showToast("입장이 확인되었습니다! ⚾");
 }
 
 /* ── Benefits ── */
 function markBenefitUsed(benefitId) {
-  const benefit = DATA.benefits.find(b => b.id === benefitId);
+  const benefit = DATA.benefits.find((b) => b.id === benefitId);
   if (!benefit) return;
-  benefit.status = 'Used';
-  benefit.usedDate = new Date().toISOString().split('T')[0];
-  console.log('[Benefit Use → Benefit__c Status: Used]', benefit);
+  benefit.status = "Used";
+  benefit.usedDate = new Date().toISOString().split("T")[0];
+  console.log("[Benefit Use → Benefit__c Status: Used]", benefit);
 }
 
 function useBenefit(benefitId) {
   markBenefitUsed(benefitId);
-  document.querySelector('.benefits-list').innerHTML = DATA.benefits.map(b => renderBenefitCard(b)).join('');
-  showToast('혜택이 사용되었습니다! 🎉');
+  document.querySelector(".benefits-list").innerHTML = DATA.benefits
+    .map((b) => renderBenefitCard(b))
+    .join("");
+  showToast("혜택이 사용되었습니다! 🎉");
 }
 
 /* ── Theme ── */
 function toggleTheme() {
-  const app = document.getElementById('app');
-  const current = app.getAttribute('data-theme');
-  app.setAttribute('data-theme', current === 'light' ? 'dark' : 'light');
+  const app = document.getElementById("app");
+  const current = app.getAttribute("data-theme");
+  app.setAttribute("data-theme", current === "light" ? "dark" : "light");
 }
 
 function handleLogout() {
-  navigateTo('login');
-  showToast('로그아웃 되었습니다.');
+  navigateTo("login");
+  showToast("로그아웃 되었습니다.");
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -1142,8 +1327,8 @@ function handleLogout() {
    ══════════════════════════════════════════════════════════════ */
 
 function initApp() {
-  const app = document.getElementById('app');
-  app.setAttribute('data-theme', 'dark');
+  const app = document.getElementById("app");
+  app.setAttribute("data-theme", "dark");
 
   // Render all screens
   app.innerHTML = `
@@ -1169,10 +1354,10 @@ function initApp() {
 
   // Init signup channel chips
   setTimeout(() => {
-    const channelChips = document.getElementById('signup-channel-chips');
+    const channelChips = document.getElementById("signup-channel-chips");
     if (channelChips) initChipGroup(channelChips, null, true);
 
-    const posChips = document.getElementById('player-position-chips');
+    const posChips = document.getElementById("player-position-chips");
     if (posChips) initChipGroup(posChips, () => filterPlayers());
 
     renderPlayerGrid();
@@ -1185,19 +1370,20 @@ function initApp() {
   }, 0);
 
   // Start at splash, auto-advance (only if the user hasn't already navigated away)
-  navigateTo('splash', false);
+  navigateTo("splash", false);
   setTimeout(() => {
-    if (document.getElementById('splash')?.classList.contains('active')) navigateTo('login');
+    if (document.getElementById("splash")?.classList.contains("active"))
+      navigateTo("login");
   }, 2200);
 
   // Handle browser back
-  window.addEventListener('popstate', (e) => {
+  window.addEventListener("popstate", (e) => {
     if (e.state?.screen) navigateTo(e.state.screen, false);
   });
 
   // Track app open
-  trackEngagement('App Open', 'Fan App');
+  trackEngagement("App Open", "Fan App");
 }
 
 // Go!
-document.addEventListener('DOMContentLoaded', initApp);
+document.addEventListener("DOMContentLoaded", initApp);
