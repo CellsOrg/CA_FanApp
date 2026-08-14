@@ -1287,18 +1287,18 @@ function renderGoodsGrid() {
 }
 
 /* ── Check-in ── */
-function handleCheckin() {
-  // → Salesforce Admission__c
-  const admissionData = {
-    fan: DATA.currentFan.id,
-    game: DATA.games[0].id,
-    admissionTime: new Date().toISOString(),
+async function handleCheckin() {
+  const result = await callSalesforceApi("checkin", {
+    fanId: APP.currentFanId,
+    gameId: DATA.games[0].id,
     gate: "Gate A",
     section: "1루",
     row: "A",
     seatNumber: "12",
-  };
-  console.log("[Check-in → Admission__c]", admissionData);
+  });
+  if (!result.success) {
+    console.warn("[Checkin] Salesforce sync skipped:", result.error);
+  }
   trackEngagement("Check-in", "Fan App");
 
   DATA.fanStats.totalAttendance += 1;
