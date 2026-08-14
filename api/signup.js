@@ -1,22 +1,13 @@
 // api/signup.js
 // Fan App 회원가입 → Salesforce Person Account 생성
 //
-// 필드 매핑 (2026-08-13 org 조회로 확인된 실제 API 이름 기준):
-//   name          → LastName (Person Account는 Name이 아니라 LastName)
-//   phone         → Phone
-//   channel[0]    → Acquisition_Channel__c (단일 Picklist — MVP는 첫 번째 값만 사용, Decision 참고)
-//   consent.email → Email_Opt_In__c
-//   consent.sms   → SMS_Opt_In__c
-//   consent.push  → Push_Opt_In__c
-//   consent.kakao → Kakao_Opt_In__c
-//
-// 주의: consent.terms(이용약관), consent.privacy(개인정보)는 프론트엔드 가입 검증용일 뿐,
-//       대응하는 Salesforce 필드가 아직 없어 전송하지 않음 (승우님 확인 대기 중 — Decision 문서 참고).
+// [디버깅 중] Phone 필드에서 "No such column 'Phone'" 에러 발생 (2026-08-14)
+// → Integration User(Client Credentials Flow)의 FLS(필드 레벨 보안) 문제로 추정
+// → 원인 확정을 위해 Phone 필드 임시 제외. 확정되면 승우님께 권한 추가 요청 후 복구.
 
 import { getSalesforceToken } from './auth.js';
 
 export default async function handler(req, res) {
-  // CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -26,15 +17,15 @@ export default async function handler(req, res) {
   try {
     const { name, phone, channel, consent } = req.body;
 
-    if (!name || !phone) {
-      return res.status(400).json({ success: false, error: 'name과 phone은 필수입니다.' });
+    if (!name) {
+      return res.status(400).json({ success: false, error: 'name은 필수입니다.' });
     }
 
     const { accessToken, instanceUrl } = await getSalesforceToken();
 
+    // TODO: Phone 필드 FLS 확인되면 복구 — Phone: phone,
     const accountPayload = {
       LastName: name,
-      Phone: phone,
       Acquisition_Channel__c: Array.isArray(channel) && channel.length > 0 ? channel[0] : null,
       Email_Opt_In__c: !!consent?.email,
       SMS_Opt_In__c: !!consent?.sms,
@@ -42,8 +33,6 @@ export default async function handler(req, res) {
       Kakao_Opt_In__c: !!consent?.kakao,
     };
 
-    // Person Account RecordTypeId가 이 org에 필요하면 Vercel 환경변수로 지정
-    // (승우님께 확인 필요 — 없으면 생략하고 시도)
     if (process.env.SF_PERSON_ACCOUNT_RECORD_TYPE_ID) {
       accountPayload.RecordTypeId = process.env.SF_PERSON_ACCOUNT_RECORD_TYPE_ID;
     }
