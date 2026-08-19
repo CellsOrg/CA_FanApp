@@ -454,6 +454,7 @@ async function handleSignup() {
   });
   if (result.success) {
     APP.currentFanId = result.accountId;
+    saveFanId(result.accountId);
   } else {
     console.warn("[Signup] Salesforce sync skipped:", result.error);
   }
@@ -1394,6 +1395,17 @@ function initApp() {
   });
 
   // Track app open
+  APP.currentFanId = loadFanId();
+  if (APP.currentFanId) {
+    callSalesforceApi("engagement", {
+      fanId: APP.currentFanId,
+      type: "App Open",
+      source: "Fan App",
+    }).then((result) => {
+      if (!result.success)
+        console.warn("[Engagement] Salesforce sync skipped:", result.error);
+    });
+  }
   trackEngagement("App Open", "Fan App");
 }
 

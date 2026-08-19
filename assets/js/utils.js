@@ -157,3 +157,43 @@ async function callSalesforceApi(endpoint, payload) {
     return { success: false, error: err.message };
   }
 }
+
+/** Save the Salesforce fan (Account) Id so it survives page reloads / app restarts. */
+function saveFanId(fanId) {
+  if (!fanId) return;
+  try {
+    localStorage.setItem('ca_fan_id', fanId);
+  } catch (e) {
+    console.warn('[saveFanId] localStorage unavailable:', e);
+  }
+}
+
+/** Load the previously saved Salesforce fan (Account) Id, if any. */
+function loadFanId() {
+  try {
+    return localStorage.getItem('ca_fan_id');
+  } catch (e) {
+    console.warn('[loadFanId] localStorage unavailable:', e);
+    return null;
+  }
+}
+
+/** Save the Salesforce fan (Account) Id so it survives page reloads / app restarts. */
+function saveFanId(fanId) {
+  if (!fanId) return;
+  try {
+    localStorage.setItem('ca_fan_id', fanId);
+  } catch (e) {
+    console.warn('[saveFanId] localStorage unavailable:', e);
+  }
+}
+
+/** Load the previously saved Salesforce fan (Account) Id, if any. */
+function loadFanId() {
+  try {
+    return localStorage.getItem('ca_fan_id');
+  } catch (e) {
+    console.warn('[loadFanId] localStorage unavailable:', e);
+    return null;
+  }
+}
